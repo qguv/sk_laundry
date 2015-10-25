@@ -17,7 +17,7 @@ class Machine:
         self.status = cells[2].string
 
         self.remaining = cells[3].string
-        if self.remaining in ("  -        ", " "):
+        if self.remaining == " " or " -" in self.remaining:
             self.remaining = False
 
         self.started = cells[4].string
@@ -34,7 +34,7 @@ class Machine:
         s = self.name + ": " + self.status
 
         if self.remaining:
-            s += ", " + self.remaining + "remaining"
+            s += ", " + repr(self.remaining) + "remaining"
 
         if self.started:
             s += ", " + "started at" + self.remaining
