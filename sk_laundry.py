@@ -4,6 +4,7 @@
 SK_LAUNDRY_URL = "http://80.114.145.155/eng/Status.asp"
 
 import re
+from sys import argv
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -59,27 +60,16 @@ class Machine:
         # make machines from the information
         return [ cls(row) for row in rows ]
 
-if __name__ == "__main__":
-    machines = Machine.scrape_all()
-    s = ''
-    filler = 0
-    for m in machines:
+def basic_cli(*args):
+    if '-vv' in args:
+        print('\n'.join([ str(m) for m in Machine.scrape_all() ]))
+        return
 
-        # mark how many machines are ready
-        if m.status == "Ready":
-            filler += 1
-
-        # and log the status of each of the machines that aren't
-        else:
-            s += str(m) + '\n'
-
-    # if all the machines are ready, the message is a bit different
-    if filler == 4:
-        print("\n\n\nAll machines available.")
-
-    # otherwise bottom-align the messages detailing machines that aren't ready
-    elif filler == 0:
-        print('\n' * filler + s)
-
+    sparse_machines = '\n'.join([ str(m) for m in Machine.scrape_all() if m.status != "Ready" ])
+    if '-v' in args:
+        print(sparse_machines or "All machines available.")
     else:
-        print('\n' * (filler - 1) + s + "All others are available.")
+        print(sparse_machines)
+
+if __name__ == "__main__":
+    basic_cli(argv[1:])
